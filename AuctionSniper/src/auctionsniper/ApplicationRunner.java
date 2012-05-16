@@ -41,8 +41,12 @@ public class ApplicationRunner {
 	}
 
 	public void hasShownSniperIsBidding() {
-		// TODO Auto-generated method stub
+		driver.showsSniperStatus(STATUS_BIDDING);
 		
+	}
+
+	public void showsSniperHasWonAuction() {
+		driver.showsSniperStatus(STATUS_WINNIG);
 	}
 
 }

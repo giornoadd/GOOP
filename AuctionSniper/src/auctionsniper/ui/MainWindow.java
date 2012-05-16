@@ -15,7 +15,7 @@ public class MainWindow extends JFrame {
 	public static final String STATUS_JOINING ="Joining";
 	public static final String STATUS_LOST = "Lost";
 	public static final String STATUS_BIDDING = "Bidding";
-	public static final String STATUS_WINNIG = "Winning";
+	public static final String STATUS_WINNIG = "Won";
 
 	public MainWindow() {
 		super("Auction Sniper");
