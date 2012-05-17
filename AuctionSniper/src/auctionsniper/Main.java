@@ -73,6 +73,11 @@ public class Main {
 				public void run() { ui.showStatus(status); }
 			});
 		}
+		@Override
+		public void sniperWon() {
+			showStatus(MainWindow.STATUS_WON);
+			
+		}
 	}
 	
 	public static class XMPPAuction implements Auction {

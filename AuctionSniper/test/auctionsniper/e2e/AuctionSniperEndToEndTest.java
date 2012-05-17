@@ -41,17 +41,17 @@ public class AuctionSniperEndToEndTest {
 		auction.hasReceivedBid(1098, ApplicationRunner.SNIPER_XMPP_ID);
 		auction.reportPrice(1098, 97, ApplicationRunner.SNIPER_XMPP_ID);
 		application.hasShownSniperIsBidding();
+		application.showsSniperIsWinningAuction();
 		auction.announceClosed();		
 		application.showsSniperHasWonAuction();
-	}
-	
-	@After 
-	public void stopAuction() {
-		auction.stop();
 	}
 	
 	@After 
 	public void stopApplication() {
 		application.stop();
 	}
-}
+	
+	@After 
+	public void stopAuction() {
+		auction.stop();
+	}}
