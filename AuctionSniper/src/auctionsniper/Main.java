@@ -50,7 +50,7 @@ public class Main {
 		final Chat chat = connection.getChatManager().createChat(auctionId(itemId, connection),null);
 		this.notToBeGCd = chat;
 		Auction auction = new XMPPAuction(chat);
-		chat.addMessageListener(new AuctionMessageTranslator(connection.getUser(), new AuctionSniper(auction, new SniperStateDisplayer(ui))));
+		chat.addMessageListener(new AuctionMessageTranslator(connection.getUser(), new AuctionSniper(itemId, auction, new SniperStateDisplayer(ui))));
 		auction.join();
 	}
 	

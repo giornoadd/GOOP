@@ -30,11 +30,7 @@ public class ApplicationRunner {
 		thread.setDaemon(true);
 		thread.start();
 		driver = new AuctionSniperDriver(1000);
-		driver.showsSniperStatus(STATUS_JOINING);
-	}
-
-	public void showsSniperHasLostAuction() {
-		driver.showsSniperStatus(STATUS_LOST);
+		driver.showsSniperStatus("", 0, 0, STATUS_JOINING);
 	}
 
 	public void stop() {
@@ -54,6 +50,11 @@ public class ApplicationRunner {
 
 	public void showsSniperIsWinningAuction(int winningBid) {
 		driver.showsSniperStatus(itemId, winningBid, winningBid, STATUS_WINNIG);		
+	}
+
+	public void showsSniperHasLostAuction(int lastPrice, int lastBid)
+ {
+		driver.showsSniperStatus(itemId, lastPrice, lastBid, STATUS_LOST);
 	}
 
 }

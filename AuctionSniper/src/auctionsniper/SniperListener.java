@@ -2,14 +2,8 @@ package auctionsniper;
 
 import java.util.EventListener;
 
-import auctionsniper.SniperState;
+import auctionsniper.SniperSnapshot;
 
 public interface SniperListener extends EventListener {
-	void sniperLost();
-	
-	void sniperWinning();
-
-	void sniperWon();
-
-	void sniperBidding(SniperState sniperState);
+	void sniperStateChanged(SniperSnapshot sniperSnapshot);
 }
