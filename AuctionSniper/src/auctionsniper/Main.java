@@ -10,6 +10,7 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
 import auctionsniper.ui.MainWindow;
+import auctionsniper.ui.SniperStateDisplayer;
 import static java.lang.String.*;
 
 public class Main {
@@ -29,7 +30,7 @@ public class Main {
 	public static final String PEICE_COMMAND_FORMAT = "SOLVersion: 1.1; Event: CLOSE;";
 	public static final String JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: JOIN;";
 	public static final String BID_COMMAND_FORMAT = "SOLVersion: 1.1; Command: BID; Price: %d;";
-
+	
 	@SuppressWarnings("unused") private Chat notToBeGCd;
 	
 	private MainWindow ui;
@@ -41,8 +42,7 @@ public class Main {
 	public static void main(String... args) throws Exception {
 		Main main = new Main();
 		main.joinAuction(
-				connection(args[ARG_HOSTNAME], args[ARG_USERNAME], args[ARG_PASSWORD]), 
-						args[ARG_ITEM_ID]);
+				connection(args[ARG_HOSTNAME], args[ARG_USERNAME], args[ARG_PASSWORD]), args[ARG_ITEM_ID]);
 	}
 	
 	private void joinAuction(XMPPConnection connection, String itemId) throws XMPPException {
@@ -50,60 +50,61 @@ public class Main {
 		final Chat chat = connection.getChatManager().createChat(auctionId(itemId, connection),null);
 		this.notToBeGCd = chat;
 		Auction auction = new XMPPAuction(chat);
-		chat.addMessageListener(new AuctionMessageTranslator(connection.getUser(), new AuctionSniper(auction, new SniperStateDisplayer())));
+		chat.addMessageListener(new AuctionMessageTranslator(connection.getUser(), new AuctionSniper(auction, new SniperStateDisplayer(ui))));
 		auction.join();
 	}
 	
-	public class SniperStateDisplayer implements SniperListener {
-		@Override
-		public void sniperBidding() {
-			showStatus(MainWindow.STATUS_BIDDING);
-		}
-		@Override
-		public void sniperLost() {
-			showStatus(MainWindow.STATUS_LOST);
-		}
-		@Override
-		public void sniperWinning() {
-			showStatus(MainWindow.STATUS_WINNIG);			
-		}
-		
-		private void showStatus(final String status) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() { ui.showStatus(status); }
-			});
-		}
-		@Override
-		public void sniperWon() {
-			showStatus(MainWindow.STATUS_WON);
-			
-		}
-	}
+//	public class SniperStateDisplayer implements SniperListener {
+//
+//		@Override
+//		public void sniperLost() {
+//			showStatus(MainWindow.STATUS_LOST);
+//		}
+//		@Override
+//		public void sniperWinning() {
+//			showStatus(MainWindow.STATUS_WINNIG);			
+//		}
+//		
+//		private void showStatus(final String status) {
+//			SwingUtilities.invokeLater(new Runnable() {
+//				public void run() { ui.showStatus(status); }
+//			});
+//		}
+//		@Override
+//		public void sniperWon() {
+//			showStatus(MainWindow.STATUS_WON);
+//			
+//		}
+//		@Override
+//		public void sniperBidding(SniperState sniperState) {
+//			showStatus(MainWindow.STATUS_BIDDING);
+//		}
+//	}
 	
-	public static class XMPPAuction implements Auction {
-		private final Chat chat;
-		
-		public XMPPAuction(Chat chat){
-			this.chat = chat;
-		}
-		
-		public void bid(int amount) {
-			sendMessage(format(BID_COMMAND_FORMAT, amount));
-		}
-		
-		public void join() {
-			sendMessage(JOIN_COMMAND_FORMAT);
-		}
-		
-		private void sendMessage(final String message) {
-			try{
-				chat.sendMessage(message);
-			} catch (XMPPException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
+//	public static class XMPPAuction implements Auction {
+//		private final Chat chat;
+//		
+//		public XMPPAuction(Chat chat){
+//			this.chat = chat;
+//		}
+//		
+//		public void bid(int amount) {
+//			sendMessage(format(BID_COMMAND_FORMAT, amount));
+//		}
+//		
+//		public void join() {
+//			sendMessage(JOIN_COMMAND_FORMAT);
+//		}
+//		
+//		private void sendMessage(final String message) {
+//			try{
+//				chat.sendMessage(message);
+//			} catch (XMPPException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
+//	
 	
 	private void disconnectWhenUICloses(final XMPPConnection connection) {
 		ui.addWindowListener(new WindowAdapter() {
