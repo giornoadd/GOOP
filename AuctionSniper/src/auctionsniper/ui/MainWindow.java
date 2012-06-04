@@ -10,8 +10,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.LineBorder;
 
-import auctionsniper.SniperSnapshot;
-
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
 	public static final String APPLICATION_TITLE = "Auction Sniper";
@@ -25,19 +23,19 @@ public class MainWindow extends JFrame {
 	public static final String STATUS_WINNIG = "Winning";
 	public static final String STATUS_WON = "Won";
 
-	private final SnipersTableModel snipers = new SnipersTableModel();
+	private final SnipersTableModel snipers;
 	private final JLabel sniperStatus = createLabel(STATUS_JOINING);
-	
-	public MainWindow() {
+		
+	public MainWindow(SnipersTableModel snipers) {
 		super(APPLICATION_TITLE);
+		this.snipers = snipers;
 		setName(MAIN_WINDOW_NAME);
 		add(sniperStatus);
 		fillContentPane(makeSnipersTable());
 		pack();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setVisible(true);
-	}
-	
+		setVisible(true);	}
+
 	private static JLabel createLabel(String initialText) {
 		JLabel result = new JLabel(initialText);
 		result.setName(SNIPER_STATUS_NAME);
@@ -48,7 +46,6 @@ public class MainWindow extends JFrame {
 	private void fillContentPane(JTable snipersTable) {
 		final Container contentPane = getContentPane();
 		contentPane.setLayout(new BorderLayout());
-		
 		contentPane.add(new JScrollPane(snipersTable), BorderLayout.CENTER);	
 	}
 	
@@ -56,9 +53,5 @@ public class MainWindow extends JFrame {
 		final JTable snipersTable = new JTable(snipers);
 		snipersTable.setName(SNIPERS_TABLE_NAME);
 		return snipersTable;
-	}
-
-	public void sniperStateChanged(SniperSnapshot sniperSnapshot) {
-		snipers.sniperStateChanged(sniperSnapshot);
 	}
 }

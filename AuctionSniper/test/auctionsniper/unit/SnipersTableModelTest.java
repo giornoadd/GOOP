@@ -3,6 +3,7 @@ package auctionsniper.unit;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -12,8 +13,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import auctionsniper.SniperSnapshot;
-import auctionsniper.SniperSnapshot.SniperState;
-import auctionsniper.ui.MainWindow;
 import auctionsniper.ui.SnipersTableModel.Column;
 import auctionsniper.ui.SnipersTableModel;
 
@@ -39,25 +38,85 @@ public class SnipersTableModelTest {
 	
 	@Test
 	public void setSniperValuesInColumns() {
+		SniperSnapshot joining = SniperSnapshot.joining("item id");
+		SniperSnapshot bidding = joining.bidding(555, 666);
 		context.checking(new Expectations() {{
-			one(listener).tableChanged(with(aRowChangedEvent()));
+			allowing(listener).tableChanged(with(anyInsertionEvent()));
+			one(listener).tableChanged(with(aChangedInRow(0)));
 		}});
 		
-		model.sniperStateChanged(new SniperSnapshot("item id", 555, 666, SniperState.BIDDING));
+		model.addSniper(joining);
+		model.sniperStateChanged(bidding);
 		
-		assertColumnEquals(Column.ITEM_IDENTIFIER, "item id");
-		assertColumnEquals(Column.LAST_PRICE, 555);
-		assertColumnEquals(Column.LAST_BID, 666);
-		assertColumnEquals(Column.SNIPER_STATE, MainWindow.STATUS_BIDDING);
+		assertRowMatchesSnapshot(0, bidding);
 	}
 
-	private void assertColumnEquals(Column column, Object expected) {
-		final int rowIndex = 0;
+	private void assertRowMatchesSnapshot(int rowIndex, SniperSnapshot snapshot) {
+		assertColumnEquals(rowIndex, Column.ITEM_IDENTIFIER, snapshot.itemId);
+		assertColumnEquals(rowIndex, Column.LAST_PRICE, snapshot.lastPrice);
+		assertColumnEquals(rowIndex, Column.LAST_BID, snapshot.lastBid);
+		assertColumnEquals(rowIndex, Column.SNIPER_STATE, SnipersTableModel.textFor(snapshot.state));
+	}
+
+	private void assertColumnEquals(int rowIndex, Column column, Object expected) {
 		final int columnIndex = column.ordinal();
 		assertEquals(expected, model.getValueAt(rowIndex, columnIndex));
 	}
 
-	private Matcher<TableModelEvent> aRowChangedEvent() {
-		return samePropertyValuesAs(new TableModelEvent(model, 0));
+	protected Matcher<TableModelEvent> anyInsertionEvent() {
+		return new FeatureMatcher<TableModelEvent, Integer>(equalTo(TableModelEvent.INSERT), "table event ", "was") {
+			@Override protected Integer featureValueOf(TableModelEvent actual){
+				return actual.getType();
+			}
+		};
 	}
+
+	private Matcher<TableModelEvent> aChangedInRow(int rowIndex) {
+		return samePropertyValuesAs(new TableModelEvent(model, rowIndex));	
+	}
+	
+	@Test 
+	public void setsUpColumnHeadings() {
+		for(Column column: Column.values()){
+			assertEquals(column.name, model.getColumnName(column.ordinal()));
+		}
+	}
+	
+	@Test 
+	public void notifiesListenersWhenAddingASniper() {
+		SniperSnapshot joining = SniperSnapshot.joining("item123");
+		context.checking(new Expectations() {{
+			one(listener).tableChanged(with(anInsertionAtRow(0)));
+		}});
+		
+		assertEquals(0, model.getRowCount());
+		
+		model.addSniper(joining);
+		
+		assertEquals(1, model.getRowCount());
+		assertRowMatchesSnapshot(0, joining);
+	}
+
+	///TODO match rowindx too
+	protected Matcher<TableModelEvent> anInsertionAtRow(int rowIndex) {
+		return new FeatureMatcher<TableModelEvent, Integer>(equalTo(TableModelEvent.INSERT), "table event ", "was") {
+			@Override protected Integer featureValueOf(TableModelEvent actual){
+				return actual.getType();
+			}
+		};	
+	}
+//	@Test 
+//	public void holdsSnipersInAdditionOrder() {
+//		context.checking(new Expectations() { {
+//			ignoring(listener);
+//		}});
+//		model.addSniper(SniperSnapshot.joining("item 0"));
+//		model.addSniper(SniperSnapshot.joining("item 1"));
+//		assertEquals("item 0", cellValue(0, Column.ITEM_IDENTIFIER));
+//		assertEquals("item 1", cellValue(1, Column.ITEM_IDENTIFIER));
+//	}
+//	updatesCorrectRowForSniper() { [...]
+//	throwsDefectIfNoExistingSniperForAnUpdate() { [...]
+
+
 }

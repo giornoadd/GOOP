@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import auctionsniper.AuctionEventListener;
 import auctionsniper.AuctionEventListener.PriceSource;
 import auctionsniper.AuctionMessageTranslator;
-import static auctionsniper.ApplicationRunner.*;
+import static auctionsniper.stub.ApplicationRunner.*;
 
 @RunWith(JMock.class)
 public class AuctionMessageTranslatorTest {
