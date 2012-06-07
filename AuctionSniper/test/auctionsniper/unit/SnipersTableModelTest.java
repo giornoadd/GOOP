@@ -105,18 +105,24 @@ public class SnipersTableModelTest {
 			}
 		};	
 	}
-//	@Test 
-//	public void holdsSnipersInAdditionOrder() {
-//		context.checking(new Expectations() { {
-//			ignoring(listener);
-//		}});
-//		model.addSniper(SniperSnapshot.joining("item 0"));
-//		model.addSniper(SniperSnapshot.joining("item 1"));
-//		assertEquals("item 0", cellValue(0, Column.ITEM_IDENTIFIER));
-//		assertEquals("item 1", cellValue(1, Column.ITEM_IDENTIFIER));
-//	}
+	
+	@Test
+	public void holdsSniperInAddintionOrder(){
+		context.checking(new Expectations(){{
+			ignoring(listener);
+		}});
+		model.addSniper(SniperSnapshot.joining("item 0"));
+		model.addSniper(SniperSnapshot.joining("item 1"));
+		
+		assertEquals("item 0", cellValue(0, Column.ITEM_IDENTIFIER));
+		assertEquals("item 1", cellValue(1, Column.ITEM_IDENTIFIER));
+	}
+	
+	private String cellValue(int rowIndex, Column column){
+		return (String)model.getValueAt(rowIndex, column.ordinal());
+	}
+
 //	updatesCorrectRowForSniper() { [...]
 //	throwsDefectIfNoExistingSniperForAnUpdate() { [...]
-
 
 }

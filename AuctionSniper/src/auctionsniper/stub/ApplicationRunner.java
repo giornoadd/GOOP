@@ -8,6 +8,7 @@ import auctionsniper.ui.MainWindow;
 
 import static auctionsniper.stub.FakeAuctionServer.*;
 import static auctionsniper.ui.MainWindow.*;
+import static auctionsniper.ui.SnipersTableModel.*;
 
 public class ApplicationRunner {
 
@@ -16,13 +17,20 @@ public class ApplicationRunner {
 	public static final String SNIPER_XMPP_ID = "sniper@nboahp103014/Auction";
 	private AuctionSniperDriver driver;
 	
+	public void startBiddingIn(final FakeAuctionServer... auctions){
+		startSniper();
+		for (FakeAuctionServer auction : auctions) {
+			final String itemId = auction.getItemId();
+			driver.startBiddingFor(itemId);
+			driver.showsSniperStatus(itemId, 0, 0, textFor(SniperState.JOINING));
+		}
+	}
 	
-
-	public void startBiddingIn(final FakeAuctionServer... auctions) {
+	private void startSniper(){
 		Thread thread = new Thread("Test Application") {
 			@Override public void run() {
 				try {
-					Main.main(arguments(auctions));
+					Main.main(arguments());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -33,10 +41,7 @@ public class ApplicationRunner {
 		thread.start();
 		driver = new AuctionSniperDriver(1000);
 		driver.hasTitle(MainWindow.APPLICATION_TITLE);
-		driver.hasColumnTitles();
-		for (FakeAuctionServer auction : auctions) {
-			driver.showsSniperStatus(auction.getItemId(), 0, 0, auctionsniper.ui.SnipersTableModel.textFor(SniperState.JOINING));
-		}
+		driver.hasColumnTitles();		
 	}
 	
 	protected static String[] arguments(FakeAuctionServer... auctions) {
