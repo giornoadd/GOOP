@@ -3,7 +3,6 @@ package auctionsniper.stub;
 import auctionsniper.Main;
 import auctionsniper.SniperSnapshot.SniperState;
 import auctionsniper.stub.FakeAuctionServer;
-import auctionsniper.ui.AuctionSniperDriver;
 import auctionsniper.ui.MainWindow;
 
 import static auctionsniper.stub.FakeAuctionServer.*;

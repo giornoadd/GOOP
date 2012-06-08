@@ -1,4 +1,4 @@
-package auctionsniper.ui;	
+package auctionsniper.stub;	
 
 import javax.swing.JButton;
 import javax.swing.JTextField;
@@ -6,6 +6,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.text.JTextComponent;
 
 import auctionsniper.Main;
+import auctionsniper.ui.MainWindow;
 
 import com.objogate.wl.swing.AWTEventQueueProber;
 import com.objogate.wl.swing.ComponentManipulation;
