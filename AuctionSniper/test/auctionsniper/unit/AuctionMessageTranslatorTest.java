@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 
 import auctionsniper.AuctionEventListener;
 import auctionsniper.AuctionEventListener.PriceSource;
-import auctionsniper.AuctionMessageTranslator;
+import auctionsniper.xmpp.AuctionMessageTranslator;
 import static auctionsniper.stub.ApplicationRunner.*;
 
 @RunWith(JMock.class)

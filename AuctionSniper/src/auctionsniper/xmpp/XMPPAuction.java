@@ -1,22 +1,25 @@
-package auctionsniper;
+package auctionsniper.xmpp;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
+import auctionsniper.Announcer;
+import auctionsniper.Auction;
+import auctionsniper.AuctionEventListener;
+
 import static java.lang.String.*;
-import static auctionsniper.Main.AUCTION_ID_FORMAT;
+import static auctionsniper.xmpp.XMPPAuctionHouse.JOIN_COMMAND_FORMAT;
+import static auctionsniper.xmpp.XMPPAuctionHouse.BID_COMMAND_FORMAT;
+import static auctionsniper.xmpp.XMPPAuctionHouse.AUCTION_ID_FORMAT;;
+
 
 public class XMPPAuction implements Auction {
-	public static final String PEICE_COMMAND_FORMAT = "SOLVersion: 1.1; Event: CLOSE;";
-	public static final String JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: JOIN;";
-	public static final String BID_COMMAND_FORMAT = "SOLVersion: 1.1; Command: BID; Price: %d;";
-	
 	private final Announcer<AuctionEventListener> auctionEventListensers = Announcer.to(AuctionEventListener.class);
 	private final Chat chat;
 	
-	public XMPPAuction(Chat chat){
-		this.chat = chat;
+	public XMPPAuction(XMPPConnection connection, String itemId) {
+		chat = connection.getChatManager().createChat(auctionId(itemId, connection), new AuctionMessageTranslator(connection.getUser(), auctionEventListensers.announce()));
 	}
 	
 	public void bid(int amount) {
@@ -33,10 +36,6 @@ public class XMPPAuction implements Auction {
 		} catch (XMPPException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public XMPPAuction(XMPPConnection connection, String itemId) {
-		chat = connection.getChatManager().createChat(auctionId(itemId, connection), new AuctionMessageTranslator(connection.getUser(), auctionEventListensers.announce()));
 	}
 	
 	private static String auctionId(String itemId, XMPPConnection connection) {
