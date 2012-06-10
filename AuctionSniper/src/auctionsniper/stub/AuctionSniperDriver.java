@@ -20,6 +20,9 @@ import static com.objogate.wl.swing.matcher.JLabelTextMatcher.*;
 import static com.objogate.wl.swing.matcher.IterableComponentsMatcher.matching;
 import static java.lang.String.*;
 
+import static auctionsniper.ui.MainWindow.NEW_ITEM_ID_NAME;
+import static auctionsniper.ui.MainWindow.NEW_ITEM_STOP_PRICE_NAME;
+
 @SuppressWarnings("unchecked")
 public class AuctionSniperDriver extends JFrameDriver {
 	public AuctionSniperDriver(int timeoutMillis) {
@@ -41,23 +44,37 @@ public class AuctionSniperDriver extends JFrameDriver {
 	}
 
 	public void startBiddingFor(String itemId) {
-		JTextFieldDriver itemIdField = itemIdField();
-		itemIdField.perform("setting text", new ComponentManipulation<JTextComponent>() {
+		textField(NEW_ITEM_ID_NAME).perform("setting text", new ComponentManipulation<JTextComponent>() {
             public void manipulate(JTextComponent component) {
                 component.setText("");
             }
         });
-		itemIdField.replaceAllText(itemId);
+		textField(NEW_ITEM_ID_NAME).replaceAllText(itemId);
 		bidButton().click();
 	}
-	
-	private JTextFieldDriver itemIdField() {
-		JTextFieldDriver newItemId = new JTextFieldDriver(this, JTextField.class, named(MainWindow.NEW_ITEM_ID_NAME));
+
+	private JTextFieldDriver textField(String textFieldId) {
+		JTextFieldDriver newItemId = new JTextFieldDriver(this, JTextField.class, named(textFieldId));
 		newItemId.focusWithMouse();
 		return newItemId;
-	}
-	
+	}	
 	private JButtonDriver bidButton() {
 		return new JButtonDriver(this, JButton.class, named(MainWindow.JOIN_BUTTON_NAME));
+	}
+	
+	public void startBiddingFor(String itemId, int stopPrice) {
+		textField(NEW_ITEM_ID_NAME).perform("setting text", new ComponentManipulation<JTextComponent>() {
+            public void manipulate(JTextComponent component) {
+                component.setText("");
+            }
+        });
+		textField(NEW_ITEM_STOP_PRICE_NAME).perform("setting text", new ComponentManipulation<JTextComponent>() {
+            public void manipulate(JTextComponent component) {
+                component.setText("");
+            }
+        });
+		textField(NEW_ITEM_ID_NAME).replaceAllText(itemId);
+		textField(NEW_ITEM_STOP_PRICE_NAME).replaceAllText(String.valueOf(stopPrice));
+		bidButton().click();
 	}
 }

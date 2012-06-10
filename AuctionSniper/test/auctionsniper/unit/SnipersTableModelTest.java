@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 
 import auctionsniper.Auction;
 import auctionsniper.AuctionSniper;
+import auctionsniper.Item;
 import auctionsniper.SniperSnapshot;
 import auctionsniper.ui.SnipersTableModel.Column;
 import auctionsniper.ui.SnipersTableModel;
@@ -48,7 +49,7 @@ public class SnipersTableModelTest {
 			one(listener).tableChanged(with(aChangedInRow(0)));
 		}});
 		
-		model.sniperAdded(new AuctionSniper(joining.itemId, auction));
+		model.sniperAdded(new AuctionSniper(new Item(joining.itemId, Integer.MAX_VALUE), auction));
 		model.sniperStateChanged(bidding);
 		
 		assertRowMatchesSnapshot(0, bidding);
@@ -94,7 +95,7 @@ public class SnipersTableModelTest {
 		
 		assertEquals(0, model.getRowCount());
 		
-		model.sniperAdded(new AuctionSniper(joining.itemId, auction));
+		model.sniperAdded(new AuctionSniper(new Item(joining.itemId, Integer.MAX_VALUE), auction));
 		
 		assertEquals(1, model.getRowCount());
 		assertRowMatchesSnapshot(0, joining);
@@ -114,8 +115,8 @@ public class SnipersTableModelTest {
 		context.checking(new Expectations(){{
 			ignoring(listener);
 		}});
-		model.sniperAdded(new AuctionSniper("item 0", auction));
-		model.sniperAdded(new AuctionSniper("item 1", auction));
+		model.sniperAdded(new AuctionSniper(new Item("item 0", Integer.MAX_VALUE), auction));
+		model.sniperAdded(new AuctionSniper(new Item("item 1", Integer.MAX_VALUE), auction));
 		
 		assertEquals("item 0", cellValue(0, Column.ITEM_IDENTIFIER));
 		assertEquals("item 1", cellValue(1, Column.ITEM_IDENTIFIER));

@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import auctionsniper.Auction;
 import auctionsniper.AuctionHouse;
 import auctionsniper.AuctionSniper;
+import auctionsniper.Item;
 import auctionsniper.SniperCollector;
 import auctionsniper.SniperLauncher;
 
@@ -36,7 +37,7 @@ public class SniperLauncherTest {
 			oneOf(auction).addAuctionEventListener(with(sniperForItem(itemId))); when(auctionState.is("not joined"));
 			oneOf(sniperCollector).addSniper(with(sniperForItem(itemId))); when(auctionState.is("not joined"));
 		}});
-		luncher.joinAuction(itemId);
+		luncher.joinAuction(new Item(itemId, Integer.MAX_VALUE));
 	}
 
 	protected Matcher<AuctionSniper> sniperForItem(String itemId) {

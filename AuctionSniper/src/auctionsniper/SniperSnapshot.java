@@ -44,6 +44,9 @@ public class SniperSnapshot {
     	WINNING {
     		@Override public SniperState whenAuctionClosed() { return WON; }
     	},
+       	LOSING {
+    		@Override public SniperState whenAuctionClosed() { return LOST; }
+   		},
     	LOST,
     	WON;
     	public SniperState whenAuctionClosed() {
@@ -57,6 +60,10 @@ public class SniperSnapshot {
 
 	public SniperSnapshot winning(int price) {
 		return new SniperSnapshot(itemId, price, price, SniperState.WINNING);
+	}
+	
+	public SniperSnapshot losing(int newLastPrice) {
+		return new SniperSnapshot(itemId, newLastPrice, lastBid, SniperState.LOSING);
 	}
 
 	public SniperSnapshot bidding(int price, int bid) {

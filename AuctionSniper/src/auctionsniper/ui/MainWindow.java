@@ -6,8 +6,10 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.NumberFormat;
 
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,6 +19,7 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
 import auctionsniper.Announcer;
+import auctionsniper.Item;
 import auctionsniper.SniperPortfolio;
 import auctionsniper.UserRequestListener;
 
@@ -27,16 +30,19 @@ public class MainWindow extends JFrame {
 	public static final String SNIPERS_TABLE_NAME = "Sniper List";
 	public static final String SNIPER_STATUS_NAME = "sniper status";
 	public static final String JOIN_BUTTON_NAME = "Join Auction";
-	public static final String NEW_ITEM_ID_NAME = "item id";
+	public static final String NEW_ITEM_ID_NAME = "Item id";
+	public static final String NEW_ITEM_STOP_PRICE_NAME = "Stop price";
+	private static final String NEW_ITEM_LABEL_NAME = "Item:";
+	private static final String NEW_ITEM_STOP_PRICE_LABEL_NAME = "Stop price:";
 	
 	public static final String STATUS_JOINING ="Joining";
 	public static final String STATUS_LOST = "Lost";
+	public static final String STATUS_LOSING = "Losing";
 	public static final String STATUS_BIDDING = "Bidding";
 	public static final String STATUS_WINNIG = "Winning";
 	public static final String STATUS_WON = "Won";
 
 	private final JLabel sniperStatus = createLabel(STATUS_JOINING);
-	//From jMock
 	private final Announcer<UserRequestListener> userRequests = Announcer.to(UserRequestListener.class);
 
 		
@@ -51,18 +57,36 @@ public class MainWindow extends JFrame {
 
 	private JPanel makeControls(final SniperPortfolio portfolio) {
 		JPanel controls = new JPanel(new FlowLayout());
+		final JLabel itemLabel = new JLabel();
+		itemLabel.setText(NEW_ITEM_LABEL_NAME);
+		controls.add(itemLabel);
 		final JTextField itemIdField = new JTextField();
-		itemIdField.setColumns(25);
+		itemIdField.setColumns(10);
 		itemIdField.setName(NEW_ITEM_ID_NAME);
 		controls.add(itemIdField);
+		
+		final JLabel stopPriceLabel = new JLabel();
+		stopPriceLabel.setText(NEW_ITEM_STOP_PRICE_LABEL_NAME);
+		controls.add(stopPriceLabel);
+		final JFormattedTextField stopPriceField = new JFormattedTextField(NumberFormat.getInstance());
+		stopPriceField.setColumns(10);
+		stopPriceField.setName(NEW_ITEM_STOP_PRICE_NAME);
+		controls.add(stopPriceField);
 		
 		JButton joinAuctionButton = new JButton("Join Auction");
 		joinAuctionButton.setName(JOIN_BUTTON_NAME);
 		controls.add(joinAuctionButton);
 		joinAuctionButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				userRequests.announce().joinAuction(itemIdField.getText());
+				userRequests.announce().joinAuction(new Item(itemId(), stopPrice()));
 			}
+			private String itemId() {
+				return itemIdField.getText();
+			}
+			private int stopPrice() {
+				return ((Number)stopPriceField.getValue()).intValue();
+			}
+
 		});
 		
 		JPanel mainPane = new JPanel(new BorderLayout());
