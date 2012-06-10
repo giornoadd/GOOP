@@ -1,17 +1,16 @@
 package auctionsniper;
 
-import auctionsniper.ui.SnipersTableModel;
+public class SniperPortfolio implements SniperCollector  {	
 
-public class SniperPortfolio implements PortfolioListener {
-
-	@Override
-	public void sniperAdded(AuctionSniper auctionSniper) {
-		// TODO Auto-generated method stub
-
+	private final Announcer<PortfolioListener> portfoiloListeners = Announcer.to(PortfolioListener.class);
+	
+	public void addPortfolioListener(PortfolioListener portfolioListener) {
+		portfoiloListeners.addListener(portfolioListener);
 	}
 
-	public void addPortfolioListener(SnipersTableModel model) {
-		// TODO Auto-generated method stub
-		
+
+	@Override
+	public void addSniper(AuctionSniper auctionSniper) {
+		portfoiloListeners.announce().sniperAdded(auctionSniper);
 	}
 }

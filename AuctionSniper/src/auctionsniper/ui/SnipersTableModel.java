@@ -8,16 +8,14 @@ import javax.swing.table.AbstractTableModel;
 import com.objogate.exception.Defect;
 
 import auctionsniper.AuctionSniper;
-import auctionsniper.SniperCollector;
+import auctionsniper.PortfolioListener;
 import auctionsniper.SniperListener;
 import auctionsniper.SniperSnapshot;
 import auctionsniper.SniperSnapshot.SniperState;
 
 @SuppressWarnings("serial")
-public class SnipersTableModel extends AbstractTableModel implements SniperListener, SniperCollector {
-	private List<SniperSnapshot> snapshots = new ArrayList<>();
-	private final ArrayList<AuctionSniper> notToBeGCd = new ArrayList<AuctionSniper>();
-	
+public class SnipersTableModel extends AbstractTableModel implements SniperListener, PortfolioListener {
+	private List<SniperSnapshot> snapshots = new ArrayList<>();	
 
 	public enum Column {
 		ITEM_IDENTIFIER("Item") {
@@ -90,17 +88,15 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
 		throw new Defect("Cannot find match for " + snapshot);
 	}
 	
-	@Override
-	public void addSniper(AuctionSniper sniper) {
-		notToBeGCd.add(sniper);
-		addSniperSnapshot(sniper.getSnapshot());
-		sniper.addSniperListener(new SwingThreadSniperListener(this));
-		
-	}
-	
 	private void addSniperSnapshot(SniperSnapshot sniperSnapshot) {
 		snapshots.add(sniperSnapshot);
 		int row = snapshots.size() - 1;
 		fireTableRowsInserted(row, row);
+	}
+
+	@Override
+	public void sniperAdded(AuctionSniper auctionSniper) {
+		addSniperSnapshot(auctionSniper.getSnapshot());
+		auctionSniper.addSniperListener(new SwingThreadSniperListener(this));
 	}
 }

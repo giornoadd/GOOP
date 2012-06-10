@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
 import auctionsniper.Announcer;
+import auctionsniper.SniperPortfolio;
 import auctionsniper.UserRequestListener;
 
 @SuppressWarnings("serial")
@@ -39,16 +40,16 @@ public class MainWindow extends JFrame {
 	private final Announcer<UserRequestListener> userRequests = Announcer.to(UserRequestListener.class);
 
 		
-	public MainWindow(final SnipersTableModel snipers) {
+	public MainWindow(final SniperPortfolio portfolio) {
 		super(APPLICATION_TITLE);
 		setName(MAIN_WINDOW_NAME);
 		add(sniperStatus);
-		fillContentPane(makeControls(snipers));
+		fillContentPane(makeControls(portfolio));
 		pack();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);	}
 
-	private JPanel makeControls(final SnipersTableModel snipers) {
+	private JPanel makeControls(final SniperPortfolio portfolio) {
 		JPanel controls = new JPanel(new FlowLayout());
 		final JTextField itemIdField = new JTextField();
 		itemIdField.setColumns(25);
@@ -66,7 +67,7 @@ public class MainWindow extends JFrame {
 		
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.add(controls, BorderLayout.NORTH);
-		mainPane.add(new JScrollPane(makeSnipersTable(snipers)), BorderLayout.CENTER);
+		mainPane.add(new JScrollPane(makeSnipersTable(portfolio)), BorderLayout.CENTER);
 		return mainPane;
 	}
 
@@ -83,8 +84,10 @@ public class MainWindow extends JFrame {
 		contentPane.add(mainPane, BorderLayout.CENTER);
 	}
 	
-	private JTable makeSnipersTable(final SnipersTableModel snipers) {
-		final JTable snipersTable = new JTable(snipers);
+	private JTable makeSnipersTable(SniperPortfolio portfolio) {
+		SnipersTableModel model = new SnipersTableModel();
+		portfolio.addPortfolioListener(model);
+		JTable snipersTable = new JTable(model);
 		snipersTable.setName(SNIPERS_TABLE_NAME);
 		return snipersTable;
 	}
