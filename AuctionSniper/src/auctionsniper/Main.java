@@ -2,14 +2,11 @@ package auctionsniper;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import javax.swing.SwingUtilities;
 
 import auctionsniper.ui.MainWindow;
 import auctionsniper.ui.SnipersTableModel;
-import auctionsniper.ui.SwingThreadSniperListener;
 import auctionsniper.xmpp.XMPPAuctionHouse;
 
 public class Main {
@@ -21,9 +18,6 @@ public class Main {
 	private static final int ARG_PASSWORD = 2;
 	
 	private final SnipersTableModel snipers = new SnipersTableModel();
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private Collection<Auction> notToBeGCd = new ArrayList();
 	
 	private MainWindow ui;
 	
@@ -43,18 +37,9 @@ public class Main {
 	}
 	
 	private void addUserRequestListenerFor(final AuctionHouse auctionHouse) {
-		ui.addUserRequestListener(new UserRequestListener() {
-			@Override
-			public void joinAuction(String itemId) {
-				snipers.addSniper(SniperSnapshot.joining(itemId));
-				Auction auction = auctionHouse.auctionFor(itemId);
-				notToBeGCd.add(auction);
-				auction.addAuctionEventListener(new AuctionSniper(itemId, auction, new SwingThreadSniperListener(snipers)));
-				auction.join();
-			}
-		});
+		ui.addUserRequestListener(new SniperLauncher(auctionHouse, snipers));
 	}
-	
+
 	private void disconnectWhenUICloses(final AuctionHouse auctionHouse) {
 		ui.addWindowListener(new WindowAdapter() {
 			@Override 

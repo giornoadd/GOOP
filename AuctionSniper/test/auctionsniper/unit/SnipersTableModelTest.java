@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import auctionsniper.Auction;
+import auctionsniper.AuctionSniper;
 import auctionsniper.SniperSnapshot;
 import auctionsniper.ui.SnipersTableModel.Column;
 import auctionsniper.ui.SnipersTableModel;
@@ -24,6 +26,7 @@ import static org.junit.Assert.*;
 public class SnipersTableModelTest {
 	private final Mockery context = new Mockery();
 	private TableModelListener listener = context.mock(TableModelListener.class);
+	private Auction auction = context.mock(Auction.class);
 	private final SnipersTableModel model = new SnipersTableModel();
 	
 	@Before
@@ -45,7 +48,7 @@ public class SnipersTableModelTest {
 			one(listener).tableChanged(with(aChangedInRow(0)));
 		}});
 		
-		model.addSniper(joining);
+		model.addSniper(new AuctionSniper(joining.itemId, auction));
 		model.sniperStateChanged(bidding);
 		
 		assertRowMatchesSnapshot(0, bidding);
@@ -91,7 +94,7 @@ public class SnipersTableModelTest {
 		
 		assertEquals(0, model.getRowCount());
 		
-		model.addSniper(joining);
+		model.addSniper(new AuctionSniper(joining.itemId, auction));
 		
 		assertEquals(1, model.getRowCount());
 		assertRowMatchesSnapshot(0, joining);
@@ -111,8 +114,8 @@ public class SnipersTableModelTest {
 		context.checking(new Expectations(){{
 			ignoring(listener);
 		}});
-		model.addSniper(SniperSnapshot.joining("item 0"));
-		model.addSniper(SniperSnapshot.joining("item 1"));
+		model.addSniper(new AuctionSniper("item 0", auction));
+		model.addSniper(new AuctionSniper("item 1", auction));
 		
 		assertEquals("item 0", cellValue(0, Column.ITEM_IDENTIFIER));
 		assertEquals("item 1", cellValue(1, Column.ITEM_IDENTIFIER));
