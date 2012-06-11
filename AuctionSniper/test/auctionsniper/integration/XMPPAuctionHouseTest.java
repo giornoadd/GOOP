@@ -15,15 +15,26 @@ import auctionsniper.AuctionEventListener;
 import auctionsniper.stub.ApplicationRunner;
 import auctionsniper.stub.FakeAuctionServer;
 import auctionsniper.xmpp.XMPPAuction;
+import auctionsniper.xmpp.XMPPFailureReporter;
 
 import static auctionsniper.stub.ApplicationRunner.SNIPER_ID;
 import static auctionsniper.stub.ApplicationRunner.SNIPER_PASSWORD;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertTrue;
 import static auctionsniper.xmpp.XMPPAuctionHouse.AUCTION_RESOURCE;
+import static auctionsniper.xmpp.XMPPAuctionHouse.AUCTION_ID_FORMAT;
 
 public class XMPPAuctionHouseTest {
-	private final FakeAuctionServer server = new FakeAuctionServer("item-54321");
+	private final FakeAuctionServer server = new FakeAuctionServer("item-65432");
+	private final XMPPFailureReporter failureReporter = new XMPPFailureReporter() {
+		
+		@Override
+		public void cannotTranslateMessage(String auctionId, String failedMessage,
+				Exception exception) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
 	private XMPPConnection connection;
 	
 	
@@ -36,7 +47,7 @@ public class XMPPAuctionHouseTest {
 	@Test 
 	public void receivesEventsFromAuctionServerAfterJoining() throws Exception {
 		CountDownLatch auctionWasClosed = new CountDownLatch(1);
-		Auction auction = new XMPPAuction(connection, server.getItemId());
+		Auction auction = new XMPPAuction(connection, auctionId(server.getItemId(), connection), failureReporter);
 		auction.addAuctionEventListener(auctionClosedListener(auctionWasClosed));
 		auction.join();
 		server.hasReceivedJoinRequestFrom(ApplicationRunner.SNIPER_XMPP_ID);
@@ -44,10 +55,17 @@ public class XMPPAuctionHouseTest {
 		assertTrue("should have been closed", auctionWasClosed.await(2, SECONDS));
 	}
 	
+	private static String auctionId(String itemId, XMPPConnection connection) {
+		return String.format(AUCTION_ID_FORMAT, itemId, connection.getServiceName());
+	}
+	
 	private AuctionEventListener auctionClosedListener(final CountDownLatch auctionWasClosed) {
 		return new AuctionEventListener() {
 			public void auctionClosed() { auctionWasClosed.countDown(); }
 			public void currentPrice(int price, int increment, PriceSource priceSource) {
+				// not implemented
+			}
+			public void auctionFailed(){
 				// not implemented
 			}
 		};

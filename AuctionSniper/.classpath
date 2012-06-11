@@ -12,5 +12,10 @@
 	<classpathentry kind="lib" path="lib/windowlicker-swing-DEV.jar" sourcepath="/home/giornoadd/Documents/Learning/GOOSbyTests/windowlicker-read-only/build/jars/windowlicker-swing-DEV-src.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-2.3.jar"/>
+	<classpathentry kind="lib" path="lib/jmock-legacy-2.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/cglib-2.1_3-src.jar"/>
+	<classpathentry kind="lib" path="lib/objenesis-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/cglib-nodep-2.1_3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

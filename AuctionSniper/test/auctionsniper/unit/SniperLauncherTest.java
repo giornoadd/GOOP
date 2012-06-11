@@ -17,6 +17,7 @@ import auctionsniper.AuctionSniper;
 import auctionsniper.Item;
 import auctionsniper.SniperCollector;
 import auctionsniper.SniperLauncher;
+import auctionsniper.xmpp.XMPPAuctionException;
 
 @RunWith(JMock.class)
 public class SniperLauncherTest {
@@ -29,7 +30,7 @@ public class SniperLauncherTest {
 	private final SniperLauncher luncher = new SniperLauncher(auctionHouse, sniperCollector);
 
 	@Test
-	public void addsNewSniperToCollectionsAndThenJoinsAuction() {
+	public void addsNewSniperToCollectionsAndThenJoinsAuction() throws XMPPAuctionException {
 		final String itemId = "item 123";
 		context.checking(new Expectations() {{
 			allowing(auctionHouse).auctionFor(itemId); will(returnValue(auction));

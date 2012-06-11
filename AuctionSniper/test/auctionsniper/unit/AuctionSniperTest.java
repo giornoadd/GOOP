@@ -25,7 +25,8 @@ public class AuctionSniperTest {
 	private final Mockery context = new Mockery();
 	private final Auction auction = context.mock(Auction.class);
 	private final SniperListener sniperListener = context.mock(SniperListener.class);
-	private final AuctionSniper sniper = new AuctionSniper(new Item(ITEM_ID, Integer.MAX_VALUE), auction);
+	private final int stopBidding = 1000;
+	private final AuctionSniper sniper = new AuctionSniper(new Item(ITEM_ID, stopBidding ), auction);
 	private final States sniperState = context.states("sniper");
 	public static final String ITEM_ID = "item-54321";
 	
@@ -79,7 +80,7 @@ public class AuctionSniperTest {
 	
 	@Test
 	public void bidHigherAndReportsBiddingWhenNewPriceArrives() {
-		final int price = 1001;
+		final int price = 123;
 		final int increment = 25;
 		final int bid = price + increment;
 		context.checking(new Expectations() {{
@@ -128,5 +129,27 @@ public class AuctionSniperTest {
 //	reportsLostIfAuctionClosesWhenLosing()
 //	continuesToBeLosingOnceStopPriceHasBeenReached()
 //	doesNotBidAndReportsLosingIfPriceAfterWinningIsAboveStopPrice()
+	
+	@Test 
+	public void reportsFailedIfAuctionFailsWhenBidding() {
+		ignoringAuction();
+		allowingSniperBidding();
+		expectSniperToFailWhenItIs("bidding");
+		sniper.currentPrice(123, 45, PriceSource.FromOtherBidder);
+		sniper.auctionFailed();
+	}
+	
+	private void ignoringAuction() {
+		context.checking(new Expectations() {{
+			ignoring(auction);
+		}});
+	}
 
+	private void expectSniperToFailWhenItIs(final String state) {
+		context.checking(new Expectations() {{
+			atLeast(1).of(sniperListener).sniperStateChanged(
+					new SniperSnapshot(ITEM_ID, 0, 0, SniperState.FAILED));
+			when(sniperState.is(state));
+		}});
+	}
 }

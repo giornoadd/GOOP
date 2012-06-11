@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="sniperauction" default="all">
+	<property name="version" value="DEV" />
+
+	<property name="test.report.dir" location="build/reports/tests" />
+	<property name="test.output.dir" location="build/tests/output" />
+
+	<property name="keyboard" value="US" />
+	
+	
+	<path id="classpath.test">
+		<fileset dir="lib/junit" />
+		<fileset dir="lib/jmock" />
+	</path>
+	
+</project>

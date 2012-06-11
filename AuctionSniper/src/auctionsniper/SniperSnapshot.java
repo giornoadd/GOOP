@@ -41,6 +41,9 @@ public class SniperSnapshot {
     	BIDDING {
     		@Override public SniperState whenAuctionClosed() { return LOST; }
     	},
+    	FAILED {
+    		@Override public SniperState whenAuctionClosed() { return FAILED; }
+    	},
     	WINNING {
     		@Override public SniperState whenAuctionClosed() { return WON; }
     	},
@@ -56,6 +59,10 @@ public class SniperSnapshot {
 
 	public static SniperSnapshot joining(String itemId) {
 		return new SniperSnapshot(itemId, 0, 0, SniperState.JOINING);
+	}
+
+	public SniperSnapshot filed() {
+		return new SniperSnapshot(itemId, 0, 0, SniperState.FAILED);
 	}
 
 	public SniperSnapshot winning(int price) {

@@ -5,7 +5,7 @@ public class AuctionSniper implements AuctionEventListener {
 	private final Auction auction;
 	private final Item item;
 	private SniperSnapshot snapshot;
-	private SniperListener sniperListener;
+	private final Announcer<SniperListener> listeners = Announcer.to(SniperListener.class);
 	
 	public SniperSnapshot getSnapshot() {
 		return snapshot;
@@ -24,7 +24,7 @@ public class AuctionSniper implements AuctionEventListener {
 	}
 
 	private void notifyChange() {
-		sniperListener.sniperStateChanged(snapshot);
+		listeners.announce().sniperStateChanged(snapshot);
 	}
 
 	@Override
@@ -48,6 +48,12 @@ public class AuctionSniper implements AuctionEventListener {
 	}
 	
 	public void addSniperListener(SniperListener sniperListener) {
-		this.sniperListener = sniperListener;
+		this.listeners.addListener(sniperListener);
+	}
+
+	@Override
+	public void auctionFailed() {
+		snapshot = snapshot.filed();
+		notifyChange();
 	}
 }

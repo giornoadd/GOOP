@@ -11,16 +11,22 @@ import auctionsniper.AuctionEventListener;
 import static java.lang.String.*;
 import static auctionsniper.xmpp.XMPPAuctionHouse.JOIN_COMMAND_FORMAT;
 import static auctionsniper.xmpp.XMPPAuctionHouse.BID_COMMAND_FORMAT;
-import static auctionsniper.xmpp.XMPPAuctionHouse.AUCTION_ID_FORMAT;;
 
 
-public class XMPPAuction implements Auction {
-	private final Announcer<AuctionEventListener> auctionEventListensers = Announcer.to(AuctionEventListener.class);
+public final class XMPPAuction implements Auction {
+	private final Announcer<AuctionEventListener> auctionEventListeners = Announcer.to(AuctionEventListener.class);
 	private final Chat chat;
 	
-	public XMPPAuction(XMPPConnection connection, String itemId) {
-		chat = connection.getChatManager().createChat(auctionId(itemId, connection), new AuctionMessageTranslator(connection.getUser(), auctionEventListensers.announce()));
+	public XMPPAuction(XMPPConnection connection, String auctionJID, XMPPFailureReporter failureReporter) {
+		AuctionMessageTranslator translator = translatorFor(connection, failureReporter);
+		this.chat = connection.getChatManager().createChat(auctionJID, translator);
+		addAuctionEventListener(chatDisconnectorFor(translator));
 	}
+	
+	private AuctionMessageTranslator translatorFor(XMPPConnection connection, XMPPFailureReporter failureReporter) {
+		return new AuctionMessageTranslator(connection.getUser(),auctionEventListeners.announce(), failureReporter);
+	}
+
 	
 	public void bid(int amount) {
 		sendMessage(format(BID_COMMAND_FORMAT, amount));
@@ -38,12 +44,30 @@ public class XMPPAuction implements Auction {
 		}
 	}
 	
-	private static String auctionId(String itemId, XMPPConnection connection) {
-		return String.format(AUCTION_ID_FORMAT, itemId, connection.getServiceName());
+	private AuctionEventListener chatDisconnectorFor(final AuctionMessageTranslator translator) {
+		return new AuctionEventListener() {
+
+			@Override
+			public void auctionFailed() {
+				chat.removeMessageListener(translator);
+			}
+			@Override
+			public void auctionClosed() {
+				// TODO Auto-generated method stub
+				
+			}
+			@Override
+			public void currentPrice(int price, int increment,
+					PriceSource priceSource) {
+				// TODO Auto-generated method stub
+				
+			}
+		};
 	}
+
 
 	@Override
 	public void addAuctionEventListener(AuctionEventListener auctionEventListener) {
-		auctionEventListensers.addListener(auctionEventListener);
+		auctionEventListeners.addListener(auctionEventListener);
 	}
 }
